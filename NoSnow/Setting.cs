@@ -8,15 +8,17 @@ using System.Collections.Generic;
 
 namespace NoSnow
 {
+    // The name and location of the .co file where the setting values are stored
+    // Default location is the  C:\Users\YOUR_USER_NAME\AppData\LocalLow\Colossal Order\Cities Skylines II directory
+    // This location preserves the data even if the mod directory is deleted 
     [FileLocation(nameof(NoSnow))]
 
-    // Not referenced groups do not have to be commented out, but better to make the code cleaner
-    [SettingsUIGroupOrder(kPrecipitationGroup, kTemperatureGroup)]
-    // [SettingsUIGroupOrder(kButtonGroup, kToggleGroup, kSliderGroup, kDropdownGroup)]
+    // The display order of the groups
+    [SettingsUIGroupOrder(kPrecipitationGroup, kTemperatureGroup, kDayNightGroup)]
 
-    // Not referenced groups do not have to be commented out, but better to make the code cleaner
-    [SettingsUIShowGroupName(kPrecipitationGroup, kTemperatureGroup)]
-    // [SettingsUIShowGroupName(kButtonGroup, kToggleGroup, kSliderGroup, kDropdownGroup)]
+    // Repeat the same group names to show them
+    [SettingsUIShowGroupName(kPrecipitationGroup, kTemperatureGroup, kDayNightGroup)]
+
     public class Setting : ModSetting
     {
 
