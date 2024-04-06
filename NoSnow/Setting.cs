@@ -8,9 +8,10 @@ using System.Collections.Generic;
 
 namespace NoSnow
 {
-    // The name and location of the .co file where the setting values are stored
-    // Default location is the  C:\Users\YOUR_USER_NAME\AppData\LocalLow\Colossal Order\Cities Skylines II directory
-    // This location preserves the data even if the mod directory is deleted 
+    // The name and location of the .coc file where the setting values are stored
+    // The .coc extension is automatically added
+    // Default location is the C:\Users\YOUR_USER_NAME\AppData\LocalLow\Colossal Order\Cities Skylines II directory
+    // This location is above the Mods directory, it preserves the data even if the mod directory is deleted 
     [FileLocation(nameof(NoSnow))]
 
     // The display order of the groups
@@ -30,6 +31,7 @@ namespace NoSnow
         // =================================================================
         // =================================================================
         // Tab 1 definition
+
         public const string kWeatherSection = "Weather";
 
         // =================================================================
@@ -53,12 +55,6 @@ namespace NoSnow
         // Temperature group definition on tab 1
 
         public const string kTemperatureGroup = "Temperature";
-
-        // Not referenced groups do not have to be commented out, but better to make the code cleaner
-        /*
-        public const string kButtonGroup = "Button";
-        public const string kDropdownGroup = "Dropdown";
-        */
 
         // -----------------------------------------------------------------
         // Set minimum temparature toggle control
@@ -102,31 +98,6 @@ namespace NoSnow
 
         [SettingsUISection(kTimeSection, kDayNightGroup)]
         public bool DisableNigthToggle { get; set; }
-
-        /*
-        // -----------------------------------------------------------------
-        // Disable day toggle control definition on tab 2
-
-        [SettingsUISection(kTimeSection, kDayNightGroup)]
-        public bool DisableDayToggle { get; set; }
-
-        // =================================================================
-        // Second group definition on tab 2
-        public const string kSecondGroup = "Second group";
-
-        // -----------------------------------------------------------------
-        // Test1 toggle control definition on tab 2
-
-        [SettingsUISection(kTimeSection, kSecondGroup)]
-        public bool ToggleTest { get; set; }
-
-        // -----------------------------------------------------------------
-        // Test2 toggle control definition on tab 2
-
-        [SettingsUISection(kTimeSection, kSecondGroup)]
-        public bool ToggleTest2 { get; set; }
-
-        */
 
         // -----------------------------------------------------------------
         // Button control definition
@@ -289,31 +260,6 @@ namespace NoSnow
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DisableNigthToggle)), "Disable night" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DisableNigthToggle)), $"Check to disable night" },
-
-                /*
-                // -----------------------------------------------------------------
-                // Disable day toggle control localization
-
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DisableDayToggle)), "Disable day" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.DisableDayToggle)), $"Check to disable day" },
-                
-                // =================================================================
-                // Second localization on tab 2
-
-                { m_Setting.GetOptionGroupLocaleID(Setting.kSecondGroup), "Second" },
-
-                // =================================================================
-                // Test toggle control localization
-
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ToggleTest)), "Test11" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.ToggleTest)), $"Check to test" },
-
-                // -----------------------------------------------------------------
-                // Test toggle control localization
-
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ToggleTest2)), "Test22" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.ToggleTest2)), $"Check to test2" },
-                */
 
             };
 
