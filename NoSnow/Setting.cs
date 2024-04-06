@@ -19,24 +19,87 @@ namespace NoSnow
     // [SettingsUIShowGroupName(kButtonGroup, kToggleGroup, kSliderGroup, kDropdownGroup)]
     public class Setting : ModSetting
     {
-        public const string kSection = "Main";
 
         public Setting(IMod mod) : base(mod)
         {
 
         }
 
-        // -----------------------------------------------------------------
-        // Group definitions
+        // =================================================================
+        // =================================================================
+        // Tab 1 definition
+        public const string kSection = "Weather";
 
-        public const string kToggleGroupPrecipitation = "Toggle";
-        public const string kSliderGroupTemperature = "Slider";
+        // =================================================================
+        // Precipitation group definition on tab 1
+
+        public const string kToggleGroupPrecipitation = "Precipitation";
+
+        // -----------------------------------------------------------------
+        // Disable rain toggle control definition on tab 1
+
+        [SettingsUISection(kSection, kToggleGroupPrecipitation)]
+        public bool ToggleDisableRain { get; set; }
+
+        // -----------------------------------------------------------------
+        // Disable snow toggle control definition
+
+        [SettingsUISection(kSection, kToggleGroupPrecipitation)]
+        public bool ToggleDisableSnow { get; set; }
+
+        // =================================================================
+        // Temperature group definition on tab 1
+
+        public const string kSliderGroupTemperature = "Temperature";
 
         // Not referenced groups do not have to be commented out, but better to make the code cleaner
         /*
         public const string kButtonGroup = "Button";
         public const string kDropdownGroup = "Dropdown";
         */
+
+        // -----------------------------------------------------------------
+        // Set minimum temparature integer slider control
+
+        [SettingsUISlider(min = -50, max = 50, step = 1, scalarMultiplier = 1, unit = Unit.kTemperature)]
+        [SettingsUISection(kSection, kSliderGroupTemperature)]
+        public int IntSliderMinimumTemperature { get; set; }
+
+        // -----------------------------------------------------------------
+        // Set maximum temparature integer slider control
+
+        [SettingsUISlider(min = -50, max = 50, step = 1, scalarMultiplier = 1, unit = Unit.kTemperature)]
+        [SettingsUISection(kSection, kSliderGroupTemperature)]
+        public int IntSliderMaximumTemperature { get; set; }
+
+        // =================================================================
+        // =================================================================
+
+        // Tab 2 definition
+        public const string kSection2 = "Time";
+
+        // =================================================================
+        // Day and night group definition on tab 2
+
+        public const string kToggleGroupDayNight = "Day and night";
+
+        // -----------------------------------------------------------------
+        // Disable night toggle control definition on tab 2
+
+        [SettingsUISection(kSection2, kToggleGroupDayNight)]
+        public bool ToggleDisableNigth { get; set; }
+
+        // =================================================================
+        // Second group definition on tab 2
+
+        public const string kToggleGroupSecond = "Second group";
+
+        // -----------------------------------------------------------------
+        // Test toggle control definition on tab 2
+
+        [SettingsUISection(kSection2, kToggleGroupSecond)]
+        public bool ToggleTest { get; set; }
+
 
         // -----------------------------------------------------------------
         // Button control definition
@@ -59,19 +122,6 @@ namespace NoSnow
         [SettingsUISection(kSection, kButtonGroup)]
         public bool ButtonWithConfirmation { set { Mod.log.Info("ButtonWithConfirmation clicked"); } }
         */
-
-        // -----------------------------------------------------------------
-        // Disable snow toggle control definition
-
-        [SettingsUISection(kSection, kToggleGroupPrecipitation)]
-        public bool ToggleDisableSnow { get; set; }
-
-        // -----------------------------------------------------------------
-        // Set minimum temparature integer slider control
-
-        [SettingsUISlider(min = -50, max = 50, step = 1, scalarMultiplier = 1, unit = Unit.kTemperature)]
-        [SettingsUISection(kSection, kSliderGroupTemperature)]
-        public int IntSliderMinimumTemperature { get; set; }
 
         // -----------------------------------------------------------------
         // Integer dropdown control definition
@@ -139,51 +189,34 @@ namespace NoSnow
         {
             return new Dictionary<string, string>
             {
-                // -----------------------------------------------------------------
-                // Tab title localization
 
-                // This is the name of the tab in the Options menu. Make it the same as the name of the mod.
+                // This is the name of the item in the Options menu. Make it the same as the name of the mod.
                 { m_Setting.GetSettingsLocaleID(), "No Snow" },
 
-                // I am not sure what the effect of this setting
-                { m_Setting.GetOptionTabLocaleID(Setting.kSection), "Main" },
+                // =================================================================
+                // =================================================================
+                // Tab 1 title localization
 
-                // -----------------------------------------------------------------
-                // Group localization
+                // This is the name of the first tab of the settings page
+                { m_Setting.GetOptionTabLocaleID(Setting.kSection), "Weather" },
+
+                // =================================================================
+                // Group localization on tab 1
 
                 { m_Setting.GetOptionGroupLocaleID(Setting.kToggleGroupPrecipitation), "Precipitation" },
                 { m_Setting.GetOptionGroupLocaleID(Setting.kSliderGroupTemperature), "Temperature" },
 
-                // Not referenced groups do not have to be commented out, but better to make the code cleaner
-                /*
-                { m_Setting.GetOptionGroupLocaleID(Setting.kButtonGroup), "Buttons" },
-                { m_Setting.GetOptionGroupLocaleID(Setting.kDropdownGroup), "Dropdowns" },
-                */
+                // =================================================================
+                // Disable rain toggle control localization
 
-                // -----------------------------------------------------------------
-                // Button control localization
-
-                // Commented out as the control in Setting above is not displayed
-                /*
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.Button)), "Button" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.Button)), $"Simple single button. It should be bool property with only setter or use [{nameof(SettingsUIButtonAttribute)}] to make button from bool property with setter and getter" },
-                */
-
-                // -----------------------------------------------------------------
-                // Buton with confirmation control localization
-
-                // Commented out as the control in Setting above is not displayed
-                /*
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ButtonWithConfirmation)), "Button with confirmation" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.ButtonWithConfirmation)), $"Button can show confirmation message. Use [{nameof(SettingsUIConfirmationAttribute)}]" },
-                { m_Setting.GetOptionWarningLocaleID(nameof(Setting.ButtonWithConfirmation)), "is it confirmation text which you want to show here?" },
-                */
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ToggleDisableRain)), "Disable rain" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.ToggleDisableRain)), $"Check to disable rain" },
 
                 // -----------------------------------------------------------------
                 // Disable snow toggle control localization
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ToggleDisableSnow)), "Disable snow" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.ToggleDisableSnow)), $"Check to disable snow fall" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.ToggleDisableSnow)), $"Check to disable snow" },
 
                 // -----------------------------------------------------------------
                 // Set minimum temparature integer slider control localization
@@ -192,26 +225,41 @@ namespace NoSnow
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.IntSliderMinimumTemperature)), $"Set the minimum temperature value" },
 
                 // -----------------------------------------------------------------
-                // Integer dropdown control localization
+                // Set maximum temparature integer slider control localization
 
-                // Commented out as the control in Setting above is not displayed
-                /*
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.IntDropdown)), "Int dropdown" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.IntDropdown)), $"Use int property with getter and setter and [{nameof(SettingsUIDropdownAttribute)}(typeof(SomeType), nameof(SomeMethod))] to get int dropdown: Method must be static or instance of your setting class with 0 parameters and returns {typeof(DropdownItem<int>).Name}" },
-                */
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.IntSliderMaximumTemperature)), "The maximum temperature" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.IntSliderMaximumTemperature)), $"Set the maximum temperature value" },
 
-                // -----------------------------------------------------------------
-                // Enum dropdown control localization
+                // =================================================================
+                // =================================================================
+                // Tab 2 title localization
 
-                // Commented out as the control in Setting above is not displayed
-                /*
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.EnumDropdown)), "Simple enum dropdown" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.EnumDropdown)), $"Use any enum property with getter and setter to get enum dropdown" },
+                // This is the name of the second tab of the settings page
+                { m_Setting.GetOptionTabLocaleID(Setting.kSection2), "Time" },
 
-                { m_Setting.GetEnumValueLocaleID(Setting.SomeEnum.Value1), "Value 1" },
-                { m_Setting.GetEnumValueLocaleID(Setting.SomeEnum.Value2), "Value 2" },
-                { m_Setting.GetEnumValueLocaleID(Setting.SomeEnum.Value3), "Value 3" },
-                */
+                // =================================================================
+                // Day and night localization on tab 2
+
+                { m_Setting.GetOptionGroupLocaleID(Setting.kToggleGroupDayNight), "Day and night" },
+
+                // =================================================================
+                // Disable night toggle control localization
+
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ToggleDisableNigth)), "Disable night" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.ToggleDisableNigth)), $"Check to disable night" },
+
+                // =================================================================
+                // Second localization on tab 2
+
+                { m_Setting.GetOptionGroupLocaleID(Setting.kToggleGroupSecond), "Day and night" },
+
+                // =================================================================
+                // Disable night toggle control localization
+
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.ToggleTest)), "Test" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.ToggleTest)), $"Check to test" },
+
+
             };
 
             // Original localization dictionary
