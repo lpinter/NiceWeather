@@ -12,7 +12,7 @@ namespace NoSnow
     // The .coc extension is automatically added
     // Default location is the C:\Users\YOUR_USER_NAME\AppData\LocalLow\Colossal Order\Cities Skylines II directory
     // This location is above the Mods directory, it preserves the data even if the mod directory is deleted 
-    [FileLocation(nameof(NoSnow))]
+    [FileLocation(nameof(NoSnowSystem))]
 
     // The display order of the groups
     [SettingsUIGroupOrder(kPrecipitationGroup, kTemperatureGroup, kDayNightGroup)]
