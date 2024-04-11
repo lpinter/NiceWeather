@@ -70,9 +70,10 @@ namespace NoSnow
         public bool isInitialized = false;
         public Mod _mod;
         public ClimateSystem _climateSystem;
+        public SimulationSystem _simulationSystem;
         private DateTime _lastUpdateTime;
         private TimeSpan _lastUpdateTimeInterval = new TimeSpan(0,0,30); // 30 seconds
-        private float _priorAverageTemperature;
+        private float _priorTemperature;
         private float _priorFreezingTemperature;
         private bool _priorDisableRainToggle;
         private bool _priorDisableSnowToggle;
@@ -118,7 +119,11 @@ namespace NoSnow
             // Instantiate the Climate System to control the weather
             _climateSystem = World.GetExistingSystemManaged<ClimateSystem>();
             Mod.log.Info("Climate System found");
+            _simulationSystem = World.GetExistingSystemManaged<SimulationSystem>();
+            Mod.log.Info("Simulation System found");
 
+            // Run the update process, do not wait for the first delay
+            RunUpdateProcess();
         }
 
         // As set up in OnCreateWorld() this function is triggered in the main loop of the game continuously
@@ -131,7 +136,7 @@ namespace NoSnow
             if (elapsedTime < _lastUpdateTimeInterval || _lastUpdateTime == DateTime.MinValue)
             {
                 // The last update was less than the specified timespan ago, or the last update time is not yet saved in the instance variable, return
-             
+
                 if (_lastUpdateTime == DateTime.MinValue)
                 {
                     // Try to update the last update time instance variable to the first value
@@ -143,14 +148,23 @@ namespace NoSnow
                 return;
             }
 
-            if (_climateSystem == null)
+            // Get the config and environment values, and update the game if necessary
+            RunUpdateProcess();
+
+            // Update the last update time
+            _lastUpdateTime = now;
+            // Mod.log.Info($"Now: {now}, Last update time: {_lastUpdateTime}");
+        }
+
+        private void RunUpdateProcess()
+        {
+            if (_climateSystem == null || _simulationSystem == null)
             {
-                // Climate system is not yet initialized, return 
+                // Climate or Simulation system is not yet initialized, return 
                 return;
             }
 
-
-            Mod.log.Info($"Now: {now}, Last update time: {_lastUpdateTime}, Elapsed time: {elapsedTime}, _lastUpdateTimeInterval: {_lastUpdateTimeInterval}");
+            // Mod.log.Info($"Now: {now}, Last update time: {_lastUpdateTime}, Elapsed time: {elapsedTime}, _lastUpdateTimeInterval: {_lastUpdateTimeInterval}");
 
             // Get the config values
             bool disableRainToggle = _mod.m_Setting.DisableRainToggle;
@@ -158,38 +172,59 @@ namespace NoSnow
 
             // Get the freezing and average temperatures
             float freezingTemperature = _climateSystem.freezingTemperature;
-            Mod.log.Info($"The freezing temperature is {freezingTemperature}");
-            float averageTemperature = _climateSystem.averageTemperature;
-            Mod.log.Info($"The averageTemperature temperature is {averageTemperature}");
+            float temperature = 0f;
 
             // Control the precipitation
-            ControlPrecipitation(disableRainToggle, disableSnowToggle, freezingTemperature, averageTemperature);
-
-            // Update the last update time
-            _lastUpdateTime = now;
-            Mod.log.Info($"Now: {now}, Last update time: {_lastUpdateTime}");
+            ControlPrecipitation(disableRainToggle, disableSnowToggle, freezingTemperature, temperature);
+ 
         }
 
         // Control the precipitation based on the config settings
-        private void ControlPrecipitation(bool disableRainToggle, bool disableSnowToggle, float freezingTemperature, float averageTemperature)
+        private void ControlPrecipitation(bool disableRainToggle, bool disableSnowToggle, float freezingTemperature, float temperature)
         {
+            bool isThereChange = false;
 
+            if (_priorDisableRainToggle != disableRainToggle)
+            {
+                Mod.log.Info($"{nameof(disableRainToggle)} changed from {_priorDisableRainToggle} to {disableRainToggle}");
+                isThereChange = true;
+            }
 
-            if (_priorDisableRainToggle == disableRainToggle
-                && _priorDisableSnowToggle == disableSnowToggle
-                && _priorFreezingTemperature == freezingTemperature
-                && _priorAverageTemperature == averageTemperature)
+            if (_priorDisableSnowToggle != disableSnowToggle)
+            {
+                Mod.log.Info($"{nameof(disableSnowToggle)} changed from {_priorDisableSnowToggle} to {disableSnowToggle}");
+                isThereChange = true;
+            }
+
+            if (_priorFreezingTemperature != freezingTemperature)
+            {
+                Mod.log.Info($"{nameof(freezingTemperature)} changed from {_priorFreezingTemperature} to {freezingTemperature}");
+                isThereChange = true;
+            }
+
+            if (_priorTemperature != temperature)
+            {
+                Mod.log.Info($"{nameof(temperature)} changed from {_priorTemperature} to {temperature}");
+                isThereChange = true;
+            }
+
+            if (!isThereChange)
             {
                 // No change in settings and temperature
                 return;
             }
+
+            Mod.log.Info($"The {nameof(freezingTemperature)} is {freezingTemperature}");
+            Mod.log.Info($"The {nameof(temperature)} is {temperature}");
+            Mod.log.Info($"The {nameof(disableRainToggle)} is {disableRainToggle}");
+            Mod.log.Info($"The {nameof(disableSnowToggle)} is {disableSnowToggle}");
 
             Mod.log.Info("Updating the precipitation");
 
             // Initialize the Climate System state
             _climateSystem.precipitation.overrideState = false;
 
-            if (disableRainToggle == true && averageTemperature > freezingTemperature)
+            if (disableRainToggle == true && temperature > freezingTemperature)
             {
                 // The average temperature is above freezing, disable the rain
                 Mod.log.Info("Disable the rain");
@@ -197,7 +232,7 @@ namespace NoSnow
                 _climateSystem.precipitation.overrideValue = 0;
             }
 
-            if (disableSnowToggle == true && averageTemperature <= freezingTemperature)
+            if (disableSnowToggle == true && temperature <= freezingTemperature)
             {
                 // The average temperature is at or below freezing, disable the snow
                 Mod.log.Info("Disable the snow");
@@ -209,10 +244,9 @@ namespace NoSnow
             _priorDisableRainToggle = disableRainToggle;
             _priorDisableSnowToggle = disableSnowToggle;
             _priorFreezingTemperature = freezingTemperature;
-            _priorAverageTemperature = averageTemperature;
+            _priorTemperature = temperature;
 
         }
-
 
         public void OnGameExit()
         {
