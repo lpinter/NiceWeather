@@ -8,7 +8,7 @@
 	<!--Long description of the mod. Single line or multi line. Supports minimal markdown subset-->
 	<!--LongDescription Value="Disables the snow in the game to enhance the visibility of the image overlay for city building projects" /-->
 	<LongDescription>
-		Disables the rain, snow, clouds, and fog in the game and in the editor for better visibilty to enhance the visibility of the image overlay for city building projects
+		Disables the rain, snow, clouds, and fog in the game and in the editor for better visibilty, and make it easier to work with the image overlay for city building projects
 	</LongDescription>
 	<!--Thumbnail-->
 	<Thumbnail Value="Properties/Thumbnail.png" />
