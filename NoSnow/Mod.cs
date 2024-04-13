@@ -9,6 +9,9 @@ using System;
 using System.Runtime.InteropServices;
 using Unity.Entities;
 
+// Thanks for the help from yenyang, who pointed me to Water Features to get the current temperature based on
+// https://github.com/yenyang/Water_Features/blob/38770174dd26e2e6ceef6e1b2959d0677f83f2ba/Water_Features/Systems/RetentionBasinSystem.cs#L99
+
 namespace NoSnow
 {
     public class Mod : IMod
@@ -72,11 +75,12 @@ namespace NoSnow
         // public ClimateSystem _OLDclimateSystem;
         public ClimateSystem _climateSystem;
         private DateTime _lastUpdateTime;
-        private TimeSpan _lastUpdateTimeInterval = new TimeSpan(0,0,30); // 30 seconds
-        private float _priorTemperature;
-        private float _priorFreezingTemperature;
+        private TimeSpan _lastUpdateTimeInterval = new TimeSpan(0,0,5); // 5 seconds
+        private bool _priorIsAboveFreezing;
         private bool _priorDisableRainToggle;
         private bool _priorDisableSnowToggle;
+        private bool _priorDisableCloudToggle;
+        private bool _priorDisableFogToggle;
 
         // Constructor
         public NoSnowSystem(Mod mod)
@@ -170,6 +174,8 @@ namespace NoSnow
             // Get the config values
             bool disableRainToggle = _mod.m_Setting.DisableRainToggle;
             bool disableSnowToggle = _mod.m_Setting.DisableSnowToggle;
+            bool disableCloudToggle = _mod.m_Setting.DisableCloudsToggle;
+            bool disableFogToggle = _mod.m_Setting.DisableFogToggle;
 
             // Get the freezing and average temperatures
             float freezingTemperature = _climateSystem.freezingTemperature;
@@ -184,19 +190,95 @@ namespace NoSnow
                 temperature = temperatureOverrideValue;
             }
 
+            // Check if the temperature is above freezing
+            bool isAboveFreezing = temperature > freezingTemperature;
+
             // Control the precipitation
-            ControlPrecipitation(disableRainToggle, disableSnowToggle, freezingTemperature, temperature);
+            ControlPrecipitation(disableRainToggle, disableSnowToggle, isAboveFreezing);
+
+            // Control the cloud and fog
+            ControlCloudAndFog(disableCloudToggle, disableFogToggle);
  
         }
 
+        // Control the cloud and fog based on the config values
+        private void ControlCloudAndFog(bool disableCloudToggle, bool disableFogToggle)
+        {
+            bool isThereChange = false;
+            bool isDisableCloudChange = false;
+            bool isDisableFogChange = false;
+
+            // Check for change
+
+            if (_priorDisableCloudToggle != disableCloudToggle)
+            {
+                Mod.log.Info($"{nameof(disableCloudToggle)} changed from {_priorDisableCloudToggle} to {disableCloudToggle}");
+                isDisableCloudChange = true;
+                isThereChange = true;
+            }
+
+            if (_priorDisableFogToggle != disableFogToggle)
+            {
+                Mod.log.Info($"{nameof(disableFogToggle)} changed from {_priorDisableFogToggle} to {disableFogToggle}");
+                isDisableFogChange = true;
+                isThereChange = true;
+            }
+
+            if (!isThereChange)
+            {
+                // No change in settings and temperature
+                return;
+            }
+
+            Mod.log.Info($"The {nameof(disableCloudToggle)} is {disableCloudToggle}");
+            Mod.log.Info($"The {nameof(disableFogToggle)} is {disableFogToggle}");
+
+            Mod.log.Info("Updating Cloud and fog");
+
+            if (disableCloudToggle == true)
+            {
+                // The average temperature is above freezing, disable the Cloud
+                Mod.log.Info("Disable clouds");
+                _climateSystem.cloudiness.overrideState = true;
+                _climateSystem.cloudiness.overrideValue = 0;
+            }
+            else if (isDisableCloudChange == true && _priorDisableCloudToggle == true)
+            {
+                // Enabling clouds
+                Mod.log.Info("Enable clouds");
+                _climateSystem.cloudiness.overrideState = false;
+            }
+
+            if (disableFogToggle == true)
+            {
+                // The average temperature is above freezing, disable the Fog
+                Mod.log.Info("Disable fog");
+                _climateSystem.fog.overrideState = true;
+                _climateSystem.fog.overrideValue = 0;
+            }
+            else if (isDisableFogChange == true && _priorDisableFogToggle == true)
+            {
+                // Enabling Fog
+                Mod.log.Info("Enable fog");
+                _climateSystem.fog.overrideState = false;
+            }
+
+            // Update the "prior" values
+            _priorDisableCloudToggle = disableCloudToggle;
+            _priorDisableFogToggle = disableFogToggle;
+        }
+
+
         // Control the precipitation based on the config settings
-        private void ControlPrecipitation(bool disableRainToggle, bool disableSnowToggle, float freezingTemperature, float temperature)
+        private void ControlPrecipitation(bool disableRainToggle, bool disableSnowToggle, bool isAboveFreezing)
         {
             bool isThereChange = false;
             bool isDisableRainChange = false;
             bool isDisableSnowChange = false;
-            bool isFreezingTemperatureChange = false;
-            bool isTemperatureChange = false;
+            bool isTemperatureChangedToPositive = false;
+            bool isTemperatureChangedToNegative = false;
+
+            // Check for change
 
             if (_priorDisableRainToggle != disableRainToggle)
             {
@@ -212,18 +294,22 @@ namespace NoSnow
                 isThereChange = true;
             }
 
-            if (_priorFreezingTemperature != freezingTemperature)
+            if (_priorIsAboveFreezing != isAboveFreezing)
             {
-                Mod.log.Info($"{nameof(freezingTemperature)} changed from {_priorFreezingTemperature} to {freezingTemperature}");
-                isFreezingTemperatureChange = true;
+                Mod.log.Info($"{nameof(isAboveFreezing)} changed from {_priorIsAboveFreezing} to {isAboveFreezing}");
                 isThereChange = true;
-            }
 
-            if (_priorTemperature != temperature)
-            {
-                Mod.log.Info($"{nameof(temperature)} changed from {_priorTemperature} to {temperature}");
-                isTemperatureChange = true;
-                isThereChange = true;
+                if (!_priorIsAboveFreezing && isAboveFreezing)
+                {
+                    // The temperature just changed to positive
+                    isTemperatureChangedToPositive = true;
+                }
+                else
+                {
+                    // The temperature just changed negative
+                    isTemperatureChangedToNegative = true; 
+                }
+
             }
 
             if (!isThereChange)
@@ -232,47 +318,62 @@ namespace NoSnow
                 return;
             }
 
-            Mod.log.Info($"The {nameof(freezingTemperature)} is {freezingTemperature}");
-            Mod.log.Info($"The {nameof(temperature)} is {temperature}");
+            Mod.log.Info($"The {nameof(isAboveFreezing)} is {isAboveFreezing}");
             Mod.log.Info($"The {nameof(disableRainToggle)} is {disableRainToggle}");
             Mod.log.Info($"The {nameof(disableSnowToggle)} is {disableSnowToggle}");
 
             Mod.log.Info("Updating the precipitation");
 
-            // Initialize the Climate System state
-            // _climateSystem.precipitation.overrideState = false;
-
-            if (disableRainToggle == true && temperature > freezingTemperature)
+            // Control the rain
+            if (disableRainToggle && isAboveFreezing)
             {
-                // The average temperature is above freezing, disable the rain
-                Mod.log.Info("Disable the rain");
+                // The temperature is above freezing, disable the rain
+                Mod.log.Info("The temperature is above freezing, disable the rain");
                 _climateSystem.precipitation.overrideState = true;
                 _climateSystem.precipitation.overrideValue = 0;
             }
-            else if (isDisableRainChange == true && _priorDisableRainToggle == true)
+            else if (isDisableRainChange && _priorDisableRainToggle && isAboveFreezing)
             {
                 // This is above freezing, and enabling rain
+                Mod.log.Info("It is above freezing, and the user unchecked the 'Disable Rain' togge, enable the rain");
                 _climateSystem.precipitation.overrideState = false;
             }
 
-            if (disableSnowToggle == true && temperature <= freezingTemperature)
+            // Control the snow
+            if (disableSnowToggle && !isAboveFreezing)
             {
-                // The average temperature is at or below freezing, disable the snow
-                Mod.log.Info("Disable the snow");
+                // The temperature is at or below freezing, disable the snow
+                Mod.log.Info("The temperature is at or below freezing, disable the snow");
                 _climateSystem.precipitation.overrideState = true;
                 _climateSystem.precipitation.overrideValue = 0;
             }
-            else if (isDisableSnowChange == true && _priorDisableSnowToggle == true)
+            else if (isDisableSnowChange && _priorDisableSnowToggle && !isAboveFreezing)
             {
                 // This is below freezing, and enabling snow
+                Mod.log.Info("It is below freezing, and the user unchecked the Disable 'Snow toggle', enable the snow");
+                _climateSystem.precipitation.overrideState = false;
+            }
+
+            // Check if the precipitation changed from snow to rain
+            if (isTemperatureChangedToPositive && !disableRainToggle)
+            {
+                // The temperature just changed positive, and the rain is not disabled, enable the precipitation
+                Mod.log.Info("The temperature just changed positive, and the rain is not disabled, enable the rain");
+                _climateSystem.precipitation.overrideState = false;
+            }
+
+            // Check if the precipitation changed from rain to snow
+            if (isTemperatureChangedToNegative && !disableSnowToggle)
+            {
+                // The temperature just changed negative, and the snow is not disabled, enable the precipitation
+                Mod.log.Info("The temperature just changed negative, and the snow is not disabled, enable the snow");
                 _climateSystem.precipitation.overrideState = false;
             }
 
             // Update the "prior" values
             _priorDisableRainToggle = disableRainToggle;
             _priorDisableSnowToggle = disableSnowToggle;
-            _priorFreezingTemperature = freezingTemperature;
-            _priorTemperature = temperature;
+            _priorIsAboveFreezing = isAboveFreezing;
 
         }
 
