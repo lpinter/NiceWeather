@@ -176,6 +176,13 @@ namespace NoSnow
 
             // Get the current temperature ***
             float temperature = _climateSystem.temperature.value;
+            float temperatureOverrideValue = _climateSystem.temperature.overrideValue;
+            bool temperatureState = _climateSystem.temperature.overrideState;
+            if (temperatureState)
+            {
+                // The temperature is overridden, use the override value
+                temperature = temperatureOverrideValue;
+            }
 
             // Control the precipitation
             ControlPrecipitation(disableRainToggle, disableSnowToggle, freezingTemperature, temperature);
@@ -186,28 +193,36 @@ namespace NoSnow
         private void ControlPrecipitation(bool disableRainToggle, bool disableSnowToggle, float freezingTemperature, float temperature)
         {
             bool isThereChange = false;
+            bool isDisableRainChange = false;
+            bool isDisableSnowChange = false;
+            bool isFreezingTemperatureChange = false;
+            bool isTemperatureChange = false;
 
             if (_priorDisableRainToggle != disableRainToggle)
             {
                 Mod.log.Info($"{nameof(disableRainToggle)} changed from {_priorDisableRainToggle} to {disableRainToggle}");
+                isDisableRainChange = true;
                 isThereChange = true;
             }
 
             if (_priorDisableSnowToggle != disableSnowToggle)
             {
                 Mod.log.Info($"{nameof(disableSnowToggle)} changed from {_priorDisableSnowToggle} to {disableSnowToggle}");
+                isDisableSnowChange = true;
                 isThereChange = true;
             }
 
             if (_priorFreezingTemperature != freezingTemperature)
             {
                 Mod.log.Info($"{nameof(freezingTemperature)} changed from {_priorFreezingTemperature} to {freezingTemperature}");
+                isFreezingTemperatureChange = true;
                 isThereChange = true;
             }
 
             if (_priorTemperature != temperature)
             {
                 Mod.log.Info($"{nameof(temperature)} changed from {_priorTemperature} to {temperature}");
+                isTemperatureChange = true;
                 isThereChange = true;
             }
 
@@ -225,7 +240,7 @@ namespace NoSnow
             Mod.log.Info("Updating the precipitation");
 
             // Initialize the Climate System state
-            _climateSystem.precipitation.overrideState = false;
+            // _climateSystem.precipitation.overrideState = false;
 
             if (disableRainToggle == true && temperature > freezingTemperature)
             {
@@ -234,6 +249,11 @@ namespace NoSnow
                 _climateSystem.precipitation.overrideState = true;
                 _climateSystem.precipitation.overrideValue = 0;
             }
+            else if (isDisableRainChange == true && _priorDisableRainToggle == true)
+            {
+                // This is above freezing, and enabling rain
+                _climateSystem.precipitation.overrideState = false;
+            }
 
             if (disableSnowToggle == true && temperature <= freezingTemperature)
             {
@@ -241,6 +261,11 @@ namespace NoSnow
                 Mod.log.Info("Disable the snow");
                 _climateSystem.precipitation.overrideState = true;
                 _climateSystem.precipitation.overrideValue = 0;
+            }
+            else if (isDisableSnowChange == true && _priorDisableSnowToggle == true)
+            {
+                // This is below freezing, and enabling snow
+                _climateSystem.precipitation.overrideState = false;
             }
 
             // Update the "prior" values
