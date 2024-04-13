@@ -2,13 +2,13 @@
 	<!--Id must be set in order to update existed mod. it is not required for publishing mod for the first time-->
 	<ModId Value="" />
 	<!--Name of the mod to display to players-->
-	<DisplayName Value="NoSnow" />
+	<DisplayName Value="NiceWeather" />
 	<!--Short description of the mod-->
-	<ShortDescription Value="Disables the Snow in the game" />
+	<ShortDescription Value="Disables the rain, snow, clouds, and fog in the game and in the editor for better visibilty." />
 	<!--Long description of the mod. Single line or multi line. Supports minimal markdown subset-->
 	<!--LongDescription Value="Disables the snow in the game to enhance the visibility of the image overlay for city building projects" /-->
 	<LongDescription>
-Disables the snow in the game to enhance the visibility of the image overlay for city building projects
+		Disables the rain, snow, clouds, and fog in the game and in the editor for better visibilty to enhance the visibility of the image overlay for city building projects
 	</LongDescription>
 	<!--Thumbnail-->
 	<Thumbnail Value="Properties/Thumbnail.png" />

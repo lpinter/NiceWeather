@@ -6,13 +6,13 @@ using Game.UI;
 using Game.UI.Widgets;
 using System.Collections.Generic;
 
-namespace NoSnow
+namespace NiceWeather
 {
     // The name and location of the .coc file where the setting values are stored
     // The .coc extension is automatically added
     // Default location is the C:\Users\YOUR_USER_NAME\AppData\LocalLow\Colossal Order\Cities Skylines II directory
     // This location is above the Mods directory, it preserves the data even if the mod directory is deleted 
-    [FileLocation(nameof(NoSnowSystem))]
+    [FileLocation(nameof(NiceWeather))]
 
     // The display order of the groups
 
@@ -209,7 +209,7 @@ namespace NoSnow
             {
 
                 // This is the name of the item in the Options menu. Make it the same as the name of the mod.
-                { m_Setting.GetSettingsLocaleID(), "No Snow" },
+                { m_Setting.GetSettingsLocaleID(), "Nice Weather" },
 
                 // =================================================================
                 // =================================================================
@@ -309,7 +309,7 @@ namespace NoSnow
             /*
             return new Dictionary<string, string>
             {
-                { m_Setting.GetSettingsLocaleID(), "No Snow" },
+                { m_Setting.GetSettingsLocaleID(), "Nice Weather" },
                 { m_Setting.GetOptionTabLocaleID(Setting.kSection), "Main" },
 
                 { m_Setting.GetOptionGroupLocaleID(Setting.kButtonGroup), "Buttons" },
