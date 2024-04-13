@@ -15,10 +15,14 @@ namespace NoSnow
     [FileLocation(nameof(NoSnowSystem))]
 
     // The display order of the groups
-    [SettingsUIGroupOrder(kPrecipitationGroup, kTemperatureGroup, kDayNightGroup)]
+
+    // TODO: *** Enable groups if needed ***
+    [SettingsUIGroupOrder(kPrecipitationGroup /* , kTemperatureGroup, kDayNightGroup */)]
 
     // Repeat the same group names to show them
-    [SettingsUIShowGroupName(kPrecipitationGroup, kTemperatureGroup, kDayNightGroup)]
+
+    // TODO: *** Enable groups if needed ***
+    [SettingsUIShowGroupName(kPrecipitationGroup /* , kTemperatureGroup, kDayNightGroup */)]
 
     public class Setting : ModSetting
     {
@@ -51,40 +55,41 @@ namespace NoSnow
         [SettingsUISection(kWeatherSection, kPrecipitationGroup)]
         public bool DisableSnowToggle { get; set; }
 
+        /*
         // =================================================================
         // Temperature group definition on tab 1
 
         public const string kTemperatureGroup = "Temperature";
 
         // -----------------------------------------------------------------
-        // Set minimum temparature toggle control
+        // Set minimum temperature toggle control
 
         [SettingsUISection(kWeatherSection, kTemperatureGroup)]
         public bool SetMinimumTemperatureToggle { get; set; }
 
         // -----------------------------------------------------------------
-        // Minimum temparature integer slider control
+        // Minimum temperature integer slider control
 
         [SettingsUISlider(min = -50, max = 50, step = 1, scalarMultiplier = 1, unit = Unit.kTemperature)]
         [SettingsUISection(kWeatherSection, kTemperatureGroup)]
         public int MinimumTemperatureIntSlider { get; set; }
 
         // -----------------------------------------------------------------
-        // Set maximum temparature toggle control
+        // Set maximum temperature toggle control
 
         [SettingsUISection(kWeatherSection, kTemperatureGroup)]
         public bool SetMaximumTemperatureToggle { get; set; }
 
         // -----------------------------------------------------------------
-        // Maximum temparature integer slider control
+        // Maximum temperature integer slider control
 
         [SettingsUISlider(min = -50, max = 50, step = 1, scalarMultiplier = 1, unit = Unit.kTemperature)]
         [SettingsUISection(kWeatherSection, kTemperatureGroup)]
         public int MaximumTemperatureIntSlider { get; set; }
-
+        */
         // =================================================================
         // =================================================================
-
+        /*
         // Tab 2 definition
         public const string kTimeSection = "Time";
 
@@ -98,6 +103,7 @@ namespace NoSnow
 
         [SettingsUISection(kTimeSection, kDayNightGroup)]
         public bool DisableNigthToggle { get; set; }
+        */
 
         // -----------------------------------------------------------------
         // Button control definition
@@ -206,6 +212,7 @@ namespace NoSnow
                 // =================================================================
                 // Disable rain toggle control localization
 
+                // TODO: *** Update toggle title and description
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DisableRainToggle)), "Disable rain" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DisableRainToggle)), $"Check to disable rain" },
 
@@ -215,6 +222,7 @@ namespace NoSnow
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DisableSnowToggle)), "Disable snow" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DisableSnowToggle)), $"Check to disable snow" },
 
+                /*
                 // =================================================================
                 // Temperature group localization
                 { m_Setting.GetOptionGroupLocaleID(Setting.kTemperatureGroup), "Temperature" },
@@ -226,7 +234,7 @@ namespace NoSnow
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.SetMinimumTemperatureToggle)), $"Check to set minimum temperature" },
 
                 // -----------------------------------------------------------------
-                // Minimum temparature integer slider control localization
+                // Minimum temperature integer slider control localization
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.MinimumTemperatureIntSlider)), "The minimum temperature" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.MinimumTemperatureIntSlider)), $"Set the minimum temperature value" },
@@ -238,11 +246,13 @@ namespace NoSnow
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.SetMaximumTemperatureToggle)), $"Check to set maximum temperature" },
 
                 // -----------------------------------------------------------------
-                // Maximum temparature integer slider control localization
+                // Maximum temperature integer slider control localization
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.MaximumTemperatureIntSlider)), "The maximum temperature" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.MaximumTemperatureIntSlider)), $"Set the maximum temperature value" },
+                */
 
+                /*
                 // =================================================================
                 // =================================================================
                 // Time tab title localization
@@ -260,7 +270,7 @@ namespace NoSnow
 
                 { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DisableNigthToggle)), "Disable night" },
                 { m_Setting.GetOptionDescLocaleID(nameof(Setting.DisableNigthToggle)), $"Check to disable night" },
-
+                */
             };
 
             // Original localization dictionary

@@ -69,8 +69,8 @@ namespace NoSnow
     {
         public bool isInitialized = false;
         public Mod _mod;
+        // public ClimateSystem _OLDclimateSystem;
         public ClimateSystem _climateSystem;
-        public SimulationSystem _simulationSystem;
         private DateTime _lastUpdateTime;
         private TimeSpan _lastUpdateTimeInterval = new TimeSpan(0,0,30); // 30 seconds
         private float _priorTemperature;
@@ -87,6 +87,12 @@ namespace NoSnow
         protected override void OnCreate()
         {
             base.OnCreate();
+
+            // Instantiate the Climate System to control the weather
+            // _OLDclimateSystem = World.GetExistingSystemManaged<ClimateSystem>();
+            Mod.log.Info("OLD Climate System found");
+            _climateSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ClimateSystem>();
+            Mod.log.Info("Climate System found");
 
             Mod.log.Info("OnCreate Ran Successfully");
         }
@@ -116,11 +122,6 @@ namespace NoSnow
                 return;
             }
 
-            // Instantiate the Climate System to control the weather
-            _climateSystem = World.GetExistingSystemManaged<ClimateSystem>();
-            Mod.log.Info("Climate System found");
-            _simulationSystem = World.GetExistingSystemManaged<SimulationSystem>();
-            Mod.log.Info("Simulation System found");
 
             // Run the update process, do not wait for the first delay
             RunUpdateProcess();
@@ -158,9 +159,9 @@ namespace NoSnow
 
         private void RunUpdateProcess()
         {
-            if (_climateSystem == null || _simulationSystem == null)
+            if (_climateSystem == null)
             {
-                // Climate or Simulation system is not yet initialized, return 
+                // Climate system has not yet been initialized, return 
                 return;
             }
 
@@ -172,7 +173,9 @@ namespace NoSnow
 
             // Get the freezing and average temperatures
             float freezingTemperature = _climateSystem.freezingTemperature;
-            float temperature = 0f;
+
+            // Get the current temperature ***
+            float temperature = _climateSystem.temperature.value;
 
             // Control the precipitation
             ControlPrecipitation(disableRainToggle, disableSnowToggle, freezingTemperature, temperature);
