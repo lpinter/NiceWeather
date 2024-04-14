@@ -1,6 +1,6 @@
 ﻿<Publish>
 	<!--Id must be set in order to update existed mod. it is not required for publishing mod for the first time-->
-	<ModId Value="" />
+	<ModId Value="78600" />
 	<!--Name of the mod to display to players-->
 	<DisplayName Value="NiceWeather" />
 	<!--Short description of the mod-->
@@ -8,14 +8,17 @@
 	<!--Long description of the mod. Single line or multi line. Supports minimal markdown subset-->
 	<!--LongDescription Value="Disables the snow in the game to enhance the visibility of the image overlay for city building projects" /-->
 	<LongDescription>
-		Disables the rain, snow, clouds, and fog in the game and in the editor for better visibilty, and make it easier to work with the image overlay for city building projects
+		Disables the rain, snow, clouds, and fog in the game and in the editor for better visibilty, and to make it easier to work with the image overlay in city building projects.
 	</LongDescription>
 	<!--Thumbnail-->
-	<Thumbnail Value="Properties/Thumbnail.png" />
+	<Thumbnail Value="Properties/Thumbnail.jpg" />
 	<!--Screenshot, can be set multiple times-->
 	<Screenshot Value="" />
 	<!--Tag, can be set multiple times-->
-	<Tag Value="" />
+	<Tag Value="disable rain" />
+	<Tag Value="disable snow" />
+	<Tag Value="disable clouds" />
+	<Tag Value="disable fog" />
 	<!--Link to the forum post where the mod can be discussed-->
 	<ForumLink Value="" />
 	<!--Version of the mod-->
