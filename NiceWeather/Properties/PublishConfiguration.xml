@@ -7,8 +7,12 @@
 	<ShortDescription Value="Disables the rain, snow, clouds, and fog in the game and in the editor for better visibilty." />
 	<!--Long description of the mod. Single line or multi line. Supports minimal markdown subset-->
 	<!--LongDescription Value="Disables the snow in the game to enhance the visibility of the image overlay for city building projects" /-->
-	<LongDescription>
-		Disables the rain, snow, clouds, and fog in the game and in the editor for better visibilty, and to make it easier to work with the image overlay in city building projects.
+	<LongDescription>Disables the rain, snow, clouds, and fog in the game and in the editor for better visibilty. Makes it easier to work with the image overlay in city building projects, as the snow, clouds, and fog obstructs the view of the networks.
+
+### Credits
+ModJuggler - Mod author
+
+Thanks to yenyang for pointing me to the correct climate system reference.	
 	</LongDescription>
 	<!--Thumbnail-->
 	<Thumbnail Value="Properties/Thumbnail.jpg" />
@@ -17,7 +21,7 @@
 	<!--Tag, can be set multiple times-->
 	<Tag Value="Code Mod" />
 	<!--Link to the forum post where the mod can be discussed-->
-	<ForumLink Value="" />
+	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/nice-weather.1665047/" />
 	<!--Version of the mod-->
 	<ModVersion Value="1.0" />
 	<!--Recommended version of the base game to use the mod-->
@@ -25,7 +29,7 @@
 	<!--Dependency for the mod, can be set multiple times-->
 	<Dependency Id="" />
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-	<ChangeLog Value="Updated the game version to 1.1.*" />
+	<ChangeLog Value="Updated the game version to 1.1.* in the metadata" />
 	<!--ChangeLog>
 	</ChangeLog-->
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
