@@ -1,2 +1,2 @@
-### Version 1.0.1
-- Updated the spelling of the toggle captions on the Options page.
+### Version 1.0.2
+- Remove the snow, clouds and fog when the city loads if the toggles are already set that way.
