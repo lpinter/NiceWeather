@@ -4,34 +4,44 @@
 	<!--Name of the mod to display to players-->
 	<DisplayName Value="Nice Weather" />
 	<!--Short description of the mod-->
-	<ShortDescription Value="Disables the rain, snow, clouds, and fog in the game and in the editor for better visibilty." />
+	<ShortDescription Value="Disables the rain, snow, clouds, and fog in the game and in the editor for better visibilty" />
 	<!--Long description of the mod. Single line or multi line. Supports minimal markdown subset-->
 	<!--LongDescription Value="Disables the snow in the game to enhance the visibility of the image overlay for city building projects" /-->
-	<LongDescription>Disables the rain, snow, clouds, and fog in the game and in the editor for better visibilty. Makes it easier to work with the image overlay in city building projects, as the snow, clouds, and fog obstructs the view of the networks.
+	<LongDescription>
+Disables the rain, snow, clouds, and fog in the game and in the editor for better visibility.
+
+The mod makes it easier to work with the image overlay in city building projects, as the snow, clouds, and fog obstruct the view of the road, tram, and train networks.
+
+The settings on the "Options" page control which elements should be disabled in the game and in the editor.
+
+- The "Disable Rain" toggle stops the rain and prevents further rainfall.
+- The "Disable Snow" toggle stops the snow, removes the existing snow to reveal the roads and tracks on the ground, and prevents further snowfall.
+- The "Disable Clouds" and "Disable Fog" toggles disable and remove the clouds and fog.
 
 ### Credits
 ModJuggler - Mod author
 
-Thanks to yenyang for pointing me to the correct climate system reference.	
+Thanks to yenyang for pointing me to the correct climate system reference!
 	</LongDescription>
 	<!--Thumbnail-->
 	<Thumbnail Value="Properties/Thumbnail.jpg" />
 	<!--Screenshot, can be set multiple times-->
-	<Screenshot Value="Properties/ScreenshotOptions.png" />
+	<Screenshot Value="Properties/Screenshot_Options.png" />
 	<!--Tag, can be set multiple times-->
 	<Tag Value="Code Mod" />
 	<!--Link to the forum post where the mod can be discussed-->
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/nice-weather.1665047/" />
 	<!--Version of the mod-->
-	<ModVersion Value="1.0" />
+	<ModVersion Value="1.0.1" />
 	<!--Recommended version of the base game to use the mod-->
 	<GameVersion Value="1.1.*" />
 	<!--Dependency for the mod, can be set multiple times-->
 	<Dependency Id="" />
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-	<ChangeLog Value="Updated the game version to 1.1.* in the metadata" />
-	<!--ChangeLog>
-	</ChangeLog-->
+	<ChangeLog>
+### Version 1.0.1
+- Updated the spelling of the toggle captions on the Options page.
+	</ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
 	<ExternalLink Type="github" Url="https://github.com/lpinter/NiceWeather.git" />
 </Publish>

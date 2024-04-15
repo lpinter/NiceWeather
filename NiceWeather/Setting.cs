@@ -58,7 +58,7 @@ namespace NiceWeather
         // =================================================================
         // Clouds group definition on tab 1
 
-        public const string kCloudsGroup = "Clouds and fog";
+        public const string kCloudsGroup = "Clouds and Fog";
 
         // -----------------------------------------------------------------
         // Disable rain toggle control definition on tab 1
@@ -227,14 +227,14 @@ namespace NiceWeather
                 // Disable rain toggle control localization
 
                 // TODO: *** Update toggle title and description
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DisableRainToggle)), "Disable rain" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.DisableRainToggle)), $"Check to disable rain" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DisableRainToggle)), "Disable Rain" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.DisableRainToggle)), $"Check to disable the rain" },
 
                 // -----------------------------------------------------------------
                 // Disable snow toggle control localization
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DisableSnowToggle)), "Disable snow" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.DisableSnowToggle)), $"Check to disable snow" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DisableSnowToggle)), "Disable Snow" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.DisableSnowToggle)), $"Check to disable the snow" },
 
                 // =================================================================
                 // Clouds group localization
@@ -245,14 +245,14 @@ namespace NiceWeather
                 // Disable clouds toggle control localization
 
                 // TODO: *** Update toggle title and description
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DisableCloudsToggle)), "Disable clouds" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.DisableCloudsToggle)), $"Check to disable clouds" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DisableCloudsToggle)), "Disable Clouds" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.DisableCloudsToggle)), $"Check to disable the clouds" },
 
                 // -----------------------------------------------------------------
                 // Disable fog toggle control localization
 
-                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DisableFogToggle)), "Disable fog" },
-                { m_Setting.GetOptionDescLocaleID(nameof(Setting.DisableFogToggle)), $"Check to disable fog" },
+                { m_Setting.GetOptionLabelLocaleID(nameof(Setting.DisableFogToggle)), "Disable Fog" },
+                { m_Setting.GetOptionDescLocaleID(nameof(Setting.DisableFogToggle)), $"Check to disable the fog" },
 
                 /*
                 // =================================================================
