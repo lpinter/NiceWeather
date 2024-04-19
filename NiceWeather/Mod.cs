@@ -143,7 +143,7 @@ namespace NiceWeather
             public bool PriorDisableFogToggle { get => _priorDisableFogToggle; set => _priorDisableFogToggle = value; }
         }
 
-        private bool _debug = true;
+        private bool _debug = false;
 
         public Mod _mod;
         public bool isInitialized = false;
@@ -158,10 +158,10 @@ namespace NiceWeather
         private int _updateCount;
         private TimeSpan _lastUpdateTimeInterval = new TimeSpan(0,0,5); // 5 seconds
 
-        private ConfigValues _configValues;
-        private EnvironmentValues _environmentValues;
-        private PriorValues _priorValues;
- 
+        private ConfigValues _configValues = new ConfigValues();
+        private EnvironmentValues _environmentValues = new EnvironmentValues();
+        private PriorValues _priorValues = new PriorValues();
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -199,7 +199,8 @@ namespace NiceWeather
         protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
         {
 
-            LogInfo($"{nameof(OnGameLoadingComplete)} started - We are in the main menu, or in the game or editor");
+            LogInfo("********************************");
+            LogInfo($"*** {nameof(OnGameLoadingComplete)} started - We are in the main menu, or in the game or editor");
 
             // Execute OnGameLoadingComplete in the base class
             base.OnGameLoadingComplete(purpose, mode);
@@ -219,7 +220,7 @@ namespace NiceWeather
                 _isModInGoodState = false;
             }
 
-            // Enable everything to be able to apply the settings when we get into the game of the editor
+            //// Enable everything to be able to apply the settings when we get into the game of the editor
             EnableEverything();
 
             if (_inGame)
@@ -238,7 +239,6 @@ namespace NiceWeather
             {
                 LogInfo("********************************");
                 LogInfo("Not in the game or in the editor");
-                LogInfo("********************************");
             }
 
 
@@ -247,25 +247,24 @@ namespace NiceWeather
                 // We are not in the game or in the editor, or the mod is not correctly initialized, return
 
                 LogInfo($"*** Returning, {nameof(_inGame)} = {_inGame}, {nameof(_inEditor)} = {_inEditor}, {nameof(_isModInGoodState)} = {_isModInGoodState}");
+                LogInfo("********************************");
 
                 return;
             }
 
             //Clear the state values for a fresh start
             _updateCount = 0;
-            _lastUpdateTime = DateTime.Now;
-            _configValues = new ConfigValues();
-            _environmentValues = new EnvironmentValues();
-            _priorValues = new PriorValues();
+            _lastUpdateTime = DateTime.Now - new TimeSpan(0, 0, 3); // Set the last update to 3 seconds ago, so in 2 seconds the update will happen
+            //_configValues = new ConfigValues();
+            //_environmentValues = new EnvironmentValues();
+            //_priorValues = new PriorValues();
 
             // Get the config and environment values
             GetConfigAndGameValues(_configValues, _environmentValues);
 
-            // Set the map based on the config settings
-            // EnforceDisableToggles(_configValues, _environmentValues);
-
-            // Run the update process, do not wait for the first delay
-            // RunUpdateProcess();
+            // Save the values as prior values to be able to detect real changes later
+            SavePrecipitationPriorValues(_configValues, _environmentValues, _priorValues);
+            SaveCoudAndFogPriorValues(_configValues, _environmentValues, _priorValues);
 
             LogInfo("*** OnGameLoadingComplete ran successfull");
         }
@@ -309,12 +308,6 @@ namespace NiceWeather
                 LogInfo($"*** {nameof(_climateSystem)} is null, returning");
                 return;
             }
-
-            // Get the config and environment values
-            // GetConfigAndGameValues(_configValues, _environmentValues);
-
-            // Set the map based on the config settings
-            // EnforceDisableToggles(_configValues, _environmentValues);
 
             // Get the config and environment values, and update the game if necessary
             RunUpdateProcess();
@@ -406,46 +399,6 @@ namespace NiceWeather
         }
 
         /// <summary>
-        /// Run this when a new map is loaded
-        /// </summary>
-        /// <param name="configValues"></param>
-        /// <param name="environmentValues"></param>
-        private void EnforceDisableToggles(ConfigValues configValues, EnvironmentValues environmentValues)
-        {
-
-            // Set the precipitation, remove the snow, clouds and fog at the start of the map if the toggles are set
-
-            LogDebug($"*** {nameof(EnforceDisableToggles)} started - Set the environment based on the config settings");
-
-            //if (configValues.DisableRainToggle || configValues.DisableSnowToggle)
-            //{
-            //    LogDebug($"The 'Disable Rain' or the 'Disable Snow' toggle is set, disable the precipitation");
-            //    DisablePrecipitation();
-            //}
-
-            //if (configValues.DisableSnowToggle)
-            //{
-            //    LogDebug($"The 'Disable Snow' toggle is set, remove the snow");
-            //    RemoveSnow();
-            //}
-
-
-            if (configValues.DisableCloudsToggle)
-            {
-                LogDebug($"The 'Disable Cloud' toggle is set, disable the clouds");
-                DisableClouds();
-            }
-
-            if (configValues.DisableFogToggle)
-            {
-                LogDebug($"The 'Disable Fog' toggle is set, disable the fog");
-                DisableFog();
-            }
-
-            LogDebug($"{nameof(EnforceDisableToggles)} ran successfully");
-        }
-
-        /// <summary>
         /// Control the precipitation based on the config settings
         /// </summary>
         /// <param name="configValues"></param>
@@ -489,44 +442,6 @@ namespace NiceWeather
                 isThereChange = true;
             }
 
-            //if (!isThereChange)
-            //{
-            //    // No change in settings and temperature
-            //    return;
-            //}
-
-            //LogDebug("------------------------------");
-            //LogDebug("*** Updating the precipitation");
-            //LogDebug("------------------------------");
-            //LogDebug($"The {nameof(environmentValues.IsAboveFreezing)} is {environmentValues.IsAboveFreezing}");
-            //LogDebug($"The {nameof(environmentValues.IsRaining)} is {environmentValues.IsRaining}");
-            //LogDebug($"The {nameof(environmentValues.IsSnowing)} is {environmentValues.IsSnowing}");
-            //LogDebug($"The {nameof(configValues.DisableRainToggle)} is {configValues.DisableRainToggle}");
-            //LogDebug($"The {nameof(configValues.DisableSnowToggle)} is {configValues.DisableSnowToggle}");
-
-            // -----------------------------------------------------------------
-            // Enable the rain or snow if the user just unchecked the toggle
-
-            //if (!configValues.DisableRainToggle && priorValues.PriorDisableRainToggle && environmentValues.IsAboveFreezing)
-            //{
-            //    // This is above freezing, and enabling rain
-            //    LogDebug("=== It is above freezing, and the user just unchecked the 'Disable Rain' toggle, enable the rain");
-            //    EnablePrecipitation();
-            //}
-
-            //if (! configValues.DisableSnowToggle && priorValues.PriorDisableSnowToggle && !environmentValues.IsAboveFreezing)
-            //{
-            //    // This is below freezing, and enabling snow
-            //    LogDebug("=== It is below freezing, and the user just unchecked the 'Disable Snow' toggle, enable the snow");
-            //    EnablePrecipitation();
-            //}
-            //else if (configValues.DisableSnowToggle && !priorValues.PriorDisableSnowToggle)
-            //{
-            //    // The user just checked the 'Disable Snow toggle', remove the snow
-            //    LogDebug("=== The user just checked the 'Disable Snow' toggle, remove the snow");
-            //    RemoveSnow();
-            //}
-
             // -----------------------------------------------------------------
 
             if (!configValues.DisableRainToggle && environmentValues.IsAboveFreezing)
@@ -542,7 +457,7 @@ namespace NiceWeather
                 LogDebug("=== It is below freezing, and the 'Disable Snow' toggle is false, enable the snow");
                 EnablePrecipitation();
             }
-            
+
             if (configValues.DisableSnowToggle)
             {
                 // The user just checked the 'Disable Snow toggle', remove the snow
@@ -572,37 +487,27 @@ namespace NiceWeather
             }
 
             // -----------------------------------------------------------------
-            // THIS IS  NOT NECESSARY, AS WE DIRECTLY CHECK FOR RAIN AND SNOW
-
-            /*
-            // Check if the precipitation changed from snow to rain
-            if (isTemperatureChangedToPositive && !disableRainToggle)
-            {
-                // The temperature just changed positive, and the rain is not disabled, enable the precipitation
-                LogDebug("The temperature just changed positive, and the rain is not disabled, enable the rain");
-                EnablePrecipitation();
-            }
-
-            // Check if the precipitation changed from rain to snow
-            if (isTemperatureChangedToNegative && !configValues.DisableSnow)
-            {
-                // The temperature just changed negative, and the snow is not disabled, enable the precipitation
-                LogDebug("The temperature just changed negative, and the snow is not disabled, enable the snow");
-                EnablePrecipitation();
-            }
-            */
-
-            // -----------------------------------------------------------------
             // Update the "prior" values
 
+            SavePrecipitationPriorValues(configValues, environmentValues, priorValues);
+
+            LogDebug($"*** {nameof(ControlPrecipitation)} ran successfully");
+
+        }
+
+        /// <summary>
+        /// Save the prior values of the precipitation related config and environment values
+        /// </summary>
+        /// <param name="configValues"></param>
+        /// <param name="environmentValues"></param>
+        /// <param name="priorValues"></param>
+        private static void SavePrecipitationPriorValues(ConfigValues configValues, EnvironmentValues environmentValues, PriorValues priorValues)
+        {
             priorValues.PriorDisableRainToggle = configValues.DisableRainToggle;
             priorValues.PriorDisableSnowToggle = configValues.DisableSnowToggle;
             priorValues.PriorIsAboveFreezing = environmentValues.IsAboveFreezing;
             priorValues.PriorIsRaining = environmentValues.IsRaining;
             priorValues.PriorIsSnowing = environmentValues.IsSnowing;
-
-            LogDebug($"*** {nameof(ControlPrecipitation)} ran successfully");
-
         }
 
         /// <summary>
@@ -643,51 +548,6 @@ namespace NiceWeather
                 isThereChange = true;
             }
 
-            //if (!isThereChange)
-            //{
-            //    // No change in settings and cloudiness and fogginess
-            //    return;
-            //}
-
-            //LogDebug("------------------------------");
-            //LogDebug("Updating Cloud and Fog");
-            //LogDebug("------------------------------");
-            //LogDebug($"The {nameof(environmentValues.IsCloudy)} is {environmentValues.IsCloudy}");
-            //LogDebug($"The {nameof(environmentValues.IsFoggy)} is {environmentValues.IsFoggy}");
-            //LogDebug($"The {nameof(configValues.DisableCloudsToggle)} is {configValues.DisableCloudsToggle}");
-            //LogDebug($"The {nameof(configValues.DisableFogToggle)} is {configValues.DisableFogToggle}");
-
-            // -----------------------------------------------------------------
-            // Enable the clouds or fog if the user just unchecked the toggle
-
-            //if (configValues.DisableCloudsToggle && !priorValues.PriorDisableCloudToggle)
-            //{
-            //    // The user unchecked the 'Disable Clouds' toggle, enable the clouds
-            //    LogDebug("=== The user just checked the 'Disable Clouds' toggle, remove and disable the clouds");
-            //    DisableClouds();
-            //}
-
-            //if (!configValues.DisableCloudsToggle && priorValues.PriorDisableCloudToggle)
-            //{
-            //    // The user unchecked the 'Disable Clouds' toggle, enable the clouds
-            //    LogDebug("=== The user just unchecked the 'Disable Clouds' toggle, enable the clouds");
-            //    EnableClouds();
-            //}
-
-            //if (configValues.DisableFogToggle && !priorValues.PriorDisableFogToggle)
-            //{
-            //    // The user unchecked the 'Disable Fog' toggle, enable the fog
-            //    LogDebug("=== The user just checked the 'Disable Fog' toggle, remove and disable the fog");
-            //    DisableFog();
-            //}
-
-            //if (!configValues.DisableFogToggle && priorValues.PriorDisableFogToggle)
-            //{
-            //    // The user unchecked the 'Disable Fog' toggle, enable the fog
-            //    LogDebug("=== The user just unchecked the 'Disable Fog' toggle, enable the fog");
-            //    EnableFog();
-            //}
-
             // -----------------------------------------------------------------
             if (configValues.DisableCloudsToggle)
             {
@@ -718,38 +578,26 @@ namespace NiceWeather
             }
 
             // -----------------------------------------------------------------
-
-            // Control the clouds
-
-            //// if (configValues.DisableCloudsToggle && environmentValues.IsCloudy)
-            //if (configValues.DisableCloudsToggle)
-            //    {
-            //        // It is cloudy, disable the Clouds
-            //        LogDebug("--- It is cloudy or not, disable the Clouds");
-            //    DisableClouds();
-            //}
-
-            //// -----------------------------------------------------------------
-            //// Control the fog
-
-            //// if (configValues.DisableFogToggle && environmentValues.IsFoggy)
-            //if (configValues.DisableFogToggle)
-            //{
-            //    // It is foggy, disable the Fog
-            //    LogDebug("--- It is foggy or not, disable the Fog");
-            //    DisableFog();
-            //}
-
-            // -----------------------------------------------------------------
             // Update the "prior" values
 
+            SaveCoudAndFogPriorValues(configValues, environmentValues, priorValues);
+
+            LogDebug($"*** {nameof(ControlCloudAndFog)} ran successfully");
+
+        }
+
+        /// <summary>
+        /// Save the prior values of the cloud and fog related config and environment values
+        /// </summary>
+        /// <param name="configValues"></param>
+        /// <param name="environmentValues"></param>
+        /// <param name="priorValues"></param>
+        private static void SaveCoudAndFogPriorValues(ConfigValues configValues, EnvironmentValues environmentValues, PriorValues priorValues)
+        {
             priorValues.PriorDisableCloudToggle = configValues.DisableCloudsToggle;
             priorValues.PriorDisableFogToggle = configValues.DisableFogToggle;
             priorValues.PriorIsCloudy = environmentValues.IsCloudy;
             priorValues.PriorIsFoggy = environmentValues.IsFoggy;
-
-            LogDebug($"*** {nameof(ControlCloudAndFog)} ran successfully");
-
         }
 
 
@@ -884,7 +732,7 @@ namespace NiceWeather
         private void LogDebug(string msg)
         {
             if (_debug) {
-                Mod.log.Debug(msg); 
+                Mod.log.Info(msg); 
             }
         }
 

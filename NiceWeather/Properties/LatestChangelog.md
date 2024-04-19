@@ -1,2 +1,2 @@
-### Version 1.0.3
-- Optimized the cloud removal
+### Version 1.0.4
+- Fixed cloud removal when another map is loaded.
