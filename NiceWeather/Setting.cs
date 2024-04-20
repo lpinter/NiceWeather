@@ -29,7 +29,8 @@ namespace NiceWeather
 
         public Setting(IMod mod) : base(mod)
         {
-
+            // Set the default values of the settings controls
+            SetDefaults();
         }
 
         // =================================================================
@@ -68,6 +69,18 @@ namespace NiceWeather
 
         [SettingsUISection(kWeatherSection, kCloudsGroup)]
         public bool DisableFogToggle { get; set; }
+
+
+        // -----------------------------------------------------------------
+        // A hidden setting, as the last unchecked toggle value always stays 'true' in the .coc file
+        //  we will place this in the .coc file to avoid an empty JSON when all settings are 'false'
+        // Based on https://discord.com/channels/1024242828114673724/1223005675534155797
+
+        [SettingsUIHidden]
+        public bool HiddenPlaceholder { get; set; }
+
+        // -----------------------------------------------------------------
+        // Options control examples
 
         /*
         // =================================================================
@@ -191,7 +204,11 @@ namespace NiceWeather
 
         public override void SetDefaults()
         {
-            throw new System.NotImplementedException();
+            // Set the hidden placeholder setting value to true as the default value
+            // See "public bool HiddenPlaceholder { get; set; }" in Settings.cs for explanation
+            HiddenPlaceholder = true;
+
+            // throw new System.NotImplementedException();
         }
 
     }

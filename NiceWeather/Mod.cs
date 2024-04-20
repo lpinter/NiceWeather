@@ -24,6 +24,10 @@ namespace NiceWeather
         public Setting m_Setting;
         public NiceWeatherSystem _niceWeather;
 
+        /// <summary>
+        /// This is executed once, when the mod starts to load
+        /// </summary>
+        /// <param name="updateSystem"></param>
         public void OnLoad(UpdateSystem updateSystem)
         {
             log.Info($"{nameof(OnLoad)} started");
@@ -45,8 +49,14 @@ namespace NiceWeather
 
             AssetDatabase.global.LoadSettings(nameof(NiceWeatherSystem), m_Setting, new Setting(this));
 
-            // Set up triggers when thee is an update in the game 
+            // Set the hidden placeholder setting value to false at load time
+            // See "public bool HiddenPlaceholder { get; set; }" in Settings.cs for explanation
+            m_Setting.HiddenPlaceholder = false;
+
+            // Set up triggers when there is an update in the game 
             OnCreateWorld(updateSystem);
+
+            log.Info($"{nameof(OnLoad)} completed");
         }
 
         /// <summary>
@@ -57,16 +67,20 @@ namespace NiceWeather
         {
             log.Info($"{nameof(OnCreateWorld)} started");
 
+            // Example
             // updateSystem.UpdateBefore<MySystem1>(SystemUpdatePhase.Modification2); // Before
 
             // Trigger the NiceWeatherSystem in the Main Loop of the game every 25 ms
             updateSystem.UpdateAt<NiceWeatherSystem>(SystemUpdatePhase.MainLoop); // At
 
+            // Example
             // updateSystem.UpdateAfter<MySystem3>(SystemUpdatePhase.Modification4); // After
+
+            log.Info($"{nameof(OnCreateWorld)} completed");
         }
 
         /// <summary>
-        /// Triggered when the mod is disposed because we exit to Desktop, happens before OnDestroy
+        /// Triggered once, when the mod is disposed because we exit to Desktop, happens before OnDestroy
         /// </summary>
         public void OnDispose()
         {
@@ -77,6 +91,8 @@ namespace NiceWeather
                 m_Setting.UnregisterInOptionsUI();
                 m_Setting = null;
             }
+
+            log.Info($"{nameof(OnDispose)} completed");
         }
 
     }
@@ -763,9 +779,11 @@ namespace NiceWeather
         /// </summary>
         protected override void OnDestroy()
         {
-            LogInfo($"{nameof(OnDestroy)}");
+            LogInfo($"{nameof(OnDestroy)} started");
 
             base.OnDestroy();
+
+            LogInfo($"{nameof(OnDestroy)} completed");
         }
 
         /// <summary>
