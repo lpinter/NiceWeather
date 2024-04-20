@@ -7,6 +7,7 @@ using Game.Modding;
 using Game.SceneFlow;
 using Game.Simulation;
 using System;
+using System.Diagnostics.Eventing.Reader;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Unity.Entities;
@@ -129,7 +130,7 @@ namespace NiceWeather
             private bool _priorIsFoggy;
             private bool _priorDisableRainToggle;
             private bool _priorDisableSnowToggle;
-            private bool _priorDisableCloudToggle;
+            private bool _priorDisableCloudsToggle;
             private bool _priorDisableFogToggle;
 
             public bool PriorIsAboveFreezing { get => _priorIsAboveFreezing; set => _priorIsAboveFreezing = value; }
@@ -139,8 +140,25 @@ namespace NiceWeather
             public bool PriorIsFoggy { get => _priorIsFoggy; set => _priorIsFoggy = value; }
             public bool PriorDisableRainToggle { get => _priorDisableRainToggle; set => _priorDisableRainToggle = value; }
             public bool PriorDisableSnowToggle { get => _priorDisableSnowToggle; set => _priorDisableSnowToggle = value; }
-            public bool PriorDisableCloudToggle { get => _priorDisableCloudToggle; set => _priorDisableCloudToggle = value; }
+            public bool PriorDisableCloudsToggle { get => _priorDisableCloudsToggle; set => _priorDisableCloudsToggle = value; }
             public bool PriorDisableFogToggle { get => _priorDisableFogToggle; set => _priorDisableFogToggle = value; }
+        }
+
+
+        /// <summary>
+        /// We store the values set in the game or editor
+        /// </summary>
+        public class InGameValues
+        {
+            private bool _inGameDisableRainToggle;
+            private bool _inGameDisableSnowToggle;
+            private bool _inGameDisableCloudsToggle;
+            private bool _inGameDisableFogToggle;
+
+            public bool InGameDisableRainToggle { get => _inGameDisableRainToggle; set => _inGameDisableRainToggle = value; }
+            public bool InGameDisableSnowToggle { get => _inGameDisableSnowToggle; set => _inGameDisableSnowToggle = value; }
+            public bool InGameDisableCloudsToggle { get => _inGameDisableCloudsToggle; set => _inGameDisableCloudsToggle = value; }
+            public bool InGameDisableFogToggle { get => _inGameDisableFogToggle; set => _inGameDisableFogToggle = value; }
         }
 
         private bool _debug = false;
@@ -161,6 +179,7 @@ namespace NiceWeather
         private ConfigValues _configValues = new ConfigValues();
         private EnvironmentValues _environmentValues = new EnvironmentValues();
         private PriorValues _priorValues = new PriorValues();
+        private InGameValues _inGameValues = new InGameValues();
 
         /// <summary>
         /// Constructor
@@ -221,7 +240,7 @@ namespace NiceWeather
             }
 
             //// Enable everything to be able to apply the settings when we get into the game of the editor
-            EnableEverything();
+            // EnableEverything();
 
             if (_inGame)
             {
@@ -254,17 +273,14 @@ namespace NiceWeather
 
             //Clear the state values for a fresh start
             _updateCount = 0;
-            _lastUpdateTime = DateTime.Now - new TimeSpan(0, 0, 3); // Set the last update to 3 seconds ago, so in 2 seconds the update will happen
-            //_configValues = new ConfigValues();
-            //_environmentValues = new EnvironmentValues();
-            //_priorValues = new PriorValues();
+            _lastUpdateTime = DateTime.Now; // - new TimeSpan(0, 0, 3); // Set the last update to 3 seconds ago, so in 2 seconds the update will happen
 
-            // Get the config and environment values
-            GetConfigAndGameValues(_configValues, _environmentValues);
+            //// Get the config and environment values
+            //GetConfigAndGameValues(_configValues, _environmentValues);
 
-            // Save the values as prior values to be able to detect real changes later
-            SavePrecipitationPriorValues(_configValues, _environmentValues, _priorValues);
-            SaveCoudAndFogPriorValues(_configValues, _environmentValues, _priorValues);
+            //// Save the values as prior values to be able to detect real changes later
+            //SavePrecipitationPriorValues(_configValues, _environmentValues, _priorValues, _inGameValues);
+            //SaveCloudAndFogPriorValues(_configValues, _environmentValues, _priorValues, _inGameValues);
 
             LogInfo("*** OnGameLoadingComplete ran successfull");
         }
@@ -309,6 +325,12 @@ namespace NiceWeather
                 return;
             }
 
+            // Get the config and environment values
+            GetConfigAndGameValues(_configValues, _environmentValues);
+
+            // Detect confing changes while we were in the Main Menu
+            // DetectChangesOutsideOfGame(_configValues, _inGameValues);
+
             // Get the config and environment values, and update the game if necessary
             RunUpdateProcess();
 
@@ -333,14 +355,14 @@ namespace NiceWeather
                 return;
             }
 
-            // Get the config and environment values
-            GetConfigAndGameValues(_configValues, _environmentValues);
+            //// Get the config and environment values
+            //GetConfigAndGameValues(_configValues, _environmentValues);
 
             // Control the precipitation
-            ControlPrecipitation(_configValues, _environmentValues, _priorValues);
+            ControlPrecipitation(_configValues, _environmentValues, _priorValues, _inGameValues);
 
             // Control the cloud and fog
-            ControlCloudAndFog(_configValues, _environmentValues, _priorValues);
+            ControlCloudAndFog(_configValues, _environmentValues, _priorValues, _inGameValues);
 
             LogDebug("*** RunUpdateProcess ran successfully");
 
@@ -393,9 +415,25 @@ namespace NiceWeather
             }
 
             // Check if the temperature is above freezing. On high mountains the snow starts to accummulate at around 7 degrees celsius
-            environmentValues.IsAboveFreezing = temperature > freezingTemperature + 10;
+            environmentValues.IsAboveFreezing = temperature > freezingTemperature; // + 10;
 
             LogDebug("*** GetConfigAndGameValues ran successfully");
+        }
+
+
+        private void DetectChangesOutsideOfGame(ConfigValues configValues, InGameValues inGameValues)
+        {
+
+            if (configValues.DisableCloudsToggle != inGameValues.InGameDisableCloudsToggle)
+            {
+                LogInfo($"=== In the Main Menu {nameof(configValues.DisableCloudsToggle)} changed from {inGameValues.InGameDisableCloudsToggle} to {configValues.DisableCloudsToggle}");
+                // Exercise the cloud control
+                // Thread.Sleep(5000);
+                ControlClouds(inGameValues.InGameDisableCloudsToggle);
+                // Thread.Sleep(5000);
+                ControlClouds(configValues.DisableCloudsToggle);
+            }
+
         }
 
         /// <summary>
@@ -404,7 +442,7 @@ namespace NiceWeather
         /// <param name="configValues"></param>
         /// <param name="environmentValues"></param>
         /// <param name="priorValues"></param>
-        private void ControlPrecipitation(ConfigValues configValues, EnvironmentValues environmentValues, PriorValues priorValues)
+        private void ControlPrecipitation(ConfigValues configValues, EnvironmentValues environmentValues, PriorValues priorValues, InGameValues inGameValues)
         {
             LogDebug($"*** {nameof(ControlPrecipitation)} started");
 
@@ -489,7 +527,7 @@ namespace NiceWeather
             // -----------------------------------------------------------------
             // Update the "prior" values
 
-            SavePrecipitationPriorValues(configValues, environmentValues, priorValues);
+            SavePrecipitationPriorValues(configValues, environmentValues, priorValues, inGameValues);
 
             LogDebug($"*** {nameof(ControlPrecipitation)} ran successfully");
 
@@ -501,10 +539,14 @@ namespace NiceWeather
         /// <param name="configValues"></param>
         /// <param name="environmentValues"></param>
         /// <param name="priorValues"></param>
-        private static void SavePrecipitationPriorValues(ConfigValues configValues, EnvironmentValues environmentValues, PriorValues priorValues)
+        private static void SavePrecipitationPriorValues(ConfigValues configValues, EnvironmentValues environmentValues, PriorValues priorValues, InGameValues inGameValues)
         {
             priorValues.PriorDisableRainToggle = configValues.DisableRainToggle;
             priorValues.PriorDisableSnowToggle = configValues.DisableSnowToggle;
+
+            inGameValues.InGameDisableRainToggle = configValues.DisableRainToggle;
+            inGameValues.InGameDisableSnowToggle = configValues.DisableSnowToggle;
+
             priorValues.PriorIsAboveFreezing = environmentValues.IsAboveFreezing;
             priorValues.PriorIsRaining = environmentValues.IsRaining;
             priorValues.PriorIsSnowing = environmentValues.IsSnowing;
@@ -516,7 +558,7 @@ namespace NiceWeather
         /// <param name="configValues"></param>
         /// <param name="environmentValues"></param>
         /// <param name="priorValues"></param>
-        private void ControlCloudAndFog(ConfigValues configValues, EnvironmentValues environmentValues, PriorValues priorValues)
+        private void ControlCloudAndFog(ConfigValues configValues, EnvironmentValues environmentValues, PriorValues priorValues, InGameValues inGameValues)
         {
             LogDebug($"*** {nameof(ControlCloudAndFog)} started");
 
@@ -524,9 +566,9 @@ namespace NiceWeather
 
             // Check for change
 
-            if (priorValues.PriorDisableCloudToggle != configValues.DisableCloudsToggle)
+            if (priorValues.PriorDisableCloudsToggle != configValues.DisableCloudsToggle)
             {
-                LogInfo($"=== {nameof(configValues.DisableCloudsToggle)} changed from {priorValues.PriorDisableCloudToggle} to {configValues.DisableCloudsToggle}");
+                LogInfo($"=== {nameof(configValues.DisableCloudsToggle)} changed from {priorValues.PriorDisableCloudsToggle} to {configValues.DisableCloudsToggle}");
                 isThereChange = true;
             }
 
@@ -549,19 +591,8 @@ namespace NiceWeather
             }
 
             // -----------------------------------------------------------------
-            if (configValues.DisableCloudsToggle)
-            {
-                // The user unchecked the 'Disable Clouds' toggle, enable the clouds
-                LogDebug("=== The 'Disable Clouds' toggle is true, remove and disable the clouds");
-                DisableClouds();
-            }
-
-            if (!configValues.DisableCloudsToggle)
-            {
-                // The user unchecked the 'Disable Clouds' toggle, enable the clouds
-                LogDebug("=== The 'Disable Clouds' toggle is false, enable the clouds");
-                EnableClouds();
-            }
+            // Control the clouds
+            ControlClouds(configValues.DisableCloudsToggle);
 
             if (configValues.DisableFogToggle)
             {
@@ -580,10 +611,27 @@ namespace NiceWeather
             // -----------------------------------------------------------------
             // Update the "prior" values
 
-            SaveCoudAndFogPriorValues(configValues, environmentValues, priorValues);
+            SaveCloudAndFogPriorValues(configValues, environmentValues, priorValues, inGameValues);
 
             LogDebug($"*** {nameof(ControlCloudAndFog)} ran successfully");
 
+        }
+
+        private void ControlClouds(bool disableClouds)
+        {
+            if (disableClouds)
+            {
+                // The user unchecked the 'Disable Clouds' toggle, enable the clouds
+                LogDebug("=== The 'Disable Clouds' toggle is true, remove and disable the clouds");
+                DisableClouds();
+            }
+
+            if (!disableClouds)
+            {
+                // The user unchecked the 'Disable Clouds' toggle, enable the clouds
+                LogDebug("=== The 'Disable Clouds' toggle is false, enable the clouds");
+                EnableClouds();
+            }
         }
 
         /// <summary>
@@ -592,14 +640,17 @@ namespace NiceWeather
         /// <param name="configValues"></param>
         /// <param name="environmentValues"></param>
         /// <param name="priorValues"></param>
-        private static void SaveCoudAndFogPriorValues(ConfigValues configValues, EnvironmentValues environmentValues, PriorValues priorValues)
+        private void SaveCloudAndFogPriorValues(ConfigValues configValues, EnvironmentValues environmentValues, PriorValues priorValues, InGameValues inGameValues)
         {
-            priorValues.PriorDisableCloudToggle = configValues.DisableCloudsToggle;
+            priorValues.PriorDisableCloudsToggle = configValues.DisableCloudsToggle;
             priorValues.PriorDisableFogToggle = configValues.DisableFogToggle;
+
+            inGameValues.InGameDisableCloudsToggle = configValues.DisableCloudsToggle;
+            inGameValues.InGameDisableFogToggle = configValues.DisableFogToggle;
+
             priorValues.PriorIsCloudy = environmentValues.IsCloudy;
             priorValues.PriorIsFoggy = environmentValues.IsFoggy;
         }
-
 
         // -----------------------------------------------------------------
         /// <summary>

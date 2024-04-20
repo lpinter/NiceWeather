@@ -40,7 +40,7 @@ Thanks to yenyang for pointing me to the correct climate system reference!
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
 	<ChangeLog>
 ### Version 1.0.4
-- Fixed cloud removal when another map is loaded.
+- Fixed cloud removal when another map is loaded, or the setting has been changed in the main menu.
 	</ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
 	<ExternalLink Type="github" Url="https://github.com/lpinter/NiceWeather.git" />
