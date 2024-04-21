@@ -32,15 +32,15 @@ Thanks to yenyang for pointing me to the correct climate system reference!
 	<!--Link to the forum post where the mod can be discussed-->
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/nice-weather.1665047/" />
 	<!--Version of the mod-->
-	<ModVersion Value="1.0.5" />
+	<ModVersion Value="1.0.6" />
 	<!--Recommended version of the base game to use the mod-->
 	<GameVersion Value="1.1.*" />
 	<!--Dependency for the mod, can be set multiple times-->
 	<Dependency Id="" />
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
 	<ChangeLog>
-### Version 1.0.5
-- Publishing again, as Paradox had errors during the publishing process.
+### Version 1.0.6
+- Made the weather changing process faster.
 	</ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
 	<ExternalLink Type="github" Url="https://github.com/lpinter/NiceWeather.git" />
