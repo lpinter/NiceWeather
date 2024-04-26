@@ -8,6 +8,7 @@
 	<!--Long description of the mod. Single line or multi line. Supports minimal markdown subset-->
 	<!--LongDescription Value="Disables the snow in the game to enhance the visibility of the image overlay for city building projects" /-->
 	<LongDescription>
+### What it does
 Disables the rain, snow, clouds, and fog in the game and in the editor for better visibility.
 
 The mod makes it easier to work with the image overlay in city building projects, as the snow, clouds, and fog obstruct the view of the road, tram, and train networks.
@@ -18,10 +19,14 @@ The settings on the "Options" page control which elements should be disabled in 
 - The "Disable Snow" toggle stops the snow, removes the existing snow to reveal the roads and tracks on the ground, and prevents further snowfall.
 - The "Disable Clouds" and "Disable Fog" toggles disable and remove the clouds and fog.
 
-### Credits
-ModJuggler - Mod author
+### How it works
+The mod periodically checks the weather and if a disabled weather element is detected, it stops and removes it.
+To put as less load on the game as possible, it can take a few seconds to detect and remove unwanted elements.
 
-Thanks to yenyang for pointing me to the correct climate system reference!
+### Acknowledgment
+Thanks to
+- yenyang for pointing me to the correct climate system reference,
+- T.D.W for helping me to delete and replace the corrupted mod copy.
 	</LongDescription>
 	<!--Thumbnail-->
 	<Thumbnail Value="Properties/Thumbnail.jpg" />
@@ -40,7 +45,8 @@ Thanks to yenyang for pointing me to the correct climate system reference!
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
 	<ChangeLog>
 ### Version 1.0.6
-- Made the weather changing process faster.
+- Made the weather changing process faster,
+- All option values are saved correclty.
 	</ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
 	<ExternalLink Type="github" Url="https://github.com/lpinter/NiceWeather.git" />
