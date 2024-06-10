@@ -1,3 +1,3 @@
-### Version 1.0.6
-- Made the weather changing process faster,
-- All option values are saved correclty.
+### Version 1.0.7
+- Changed the checkbox captions on the Options page, 
+- Updated the GameVersion compatibility value.

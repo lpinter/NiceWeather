@@ -1,13 +1,13 @@
 ### What it does
-Disables the rain, snow, clouds, and fog in the game and in the editor for better visibility.
+Stops the rain, and snow, removes clouds, and fog in the game and in the editor for better visibility.
 
-The mod makes it easier to work with the image overlay in city building projects, as the snow, clouds, and fog obstruct the view of the road, tram, and train networks.
+The mod makes it easier to build your city, and to work with the image overlay in city building projects, as the snow, clouds, and fog obstruct the view of the road, tram, and train networks, and makes it very hard to see the overlay image.
 
-The settings on the "Options" page control which elements should be disabled in the game and in the editor.
+The settings on the "Options" page control which elements should be removed in the game and in the editor.
 
-- The "Disable Rain" toggle stops the rain and prevents further rainfall.
-- The "Disable Snow" toggle stops the snow, removes the existing snow to reveal the roads and tracks on the ground, and prevents further snowfall.
-- The "Disable Clouds" and "Disable Fog" toggles disable and remove the clouds and fog.
+- The "No Rain" toggle stops the rain and prevents further rainfall.
+- The "No Snow" toggle stops the snow, removes the existing snow to reveal the roads and tracks on the ground, and prevents further snowfall.
+- The "No Clouds" and "No Fog" toggles disable and remove the clouds and fog.
 
 ### How it works
 The mod periodically checks the weather and if a disabled weather element is detected, it stops and removes it.
