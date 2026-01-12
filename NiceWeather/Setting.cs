@@ -238,7 +238,7 @@ namespace NiceWeather
                 // =================================================================
                 // Precipitation group localization
 
-                { m_Setting.GetOptionGroupLocaleID(Setting.kPrecipitationGroup), "Precipitation  ..... .." },
+                { m_Setting.GetOptionGroupLocaleID(Setting.kPrecipitationGroup), "Precipitation  (Version 1.0.8)" },
 
                 // =================================================================
                 // Disable rain toggle control localization

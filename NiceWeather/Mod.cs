@@ -21,6 +21,7 @@ namespace NiceWeather
     public class Mod : IMod
     {
         public static ILog log = LogManager.GetLogger($"{nameof(NiceWeatherSystem)}.{nameof(Mod)}").SetShowsErrorsInUI(false);
+        public static Mod Instance { get; private set; }
         public Setting m_Setting;
         public NiceWeatherSystem _niceWeather;
 
@@ -31,6 +32,9 @@ namespace NiceWeather
         public void OnLoad(UpdateSystem updateSystem)
         {
             log.Info($"{nameof(OnLoad)} started");
+
+            // Store the instance for access by NiceWeatherSystem
+            Instance = this;
 
             if (GameManager.instance.modManager.TryGetExecutableAsset(this, out var asset))
                 log.Info($"Current mod asset at {asset.path}");
@@ -180,6 +184,13 @@ namespace NiceWeather
         private PriorValues _priorValues = new PriorValues();
 
         /// <summary>
+        /// Default constructor required by Unity.Entities for automatic system scheduling
+        /// </summary>
+        public NiceWeatherSystem()
+        {
+        }
+
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="mod"></param>
@@ -197,6 +208,12 @@ namespace NiceWeather
             LogInfo($"{nameof(OnCreate)} started");
 
             base.OnCreate();
+
+            // Ensure _mod is set if using default constructor
+            if (_mod == null)
+            {
+                _mod = Mod.Instance; // Use your static Mod instance here
+            }
 
             // Instantiate the Climate System to control the weather
             _climateSystem = World.DefaultGameObjectInjectionWorld?.GetOrCreateSystemManaged<ClimateSystem>();

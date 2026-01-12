@@ -1,3 +1,2 @@
-### Version 1.0.7
-- Changed the checkbox captions on the Options page, 
-- Updated the GameVersion compatibility value.
+### Version 1.0.8
+- Updated for GameVersion 1.5.3f1.

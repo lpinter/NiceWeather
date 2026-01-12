@@ -40,16 +40,16 @@ Thanks to
 	<!--Link to the forum post where the mod can be discussed-->
 	<ForumLink Value="https://forum.paradoxplaza.com/forum/threads/nice-weather.1665047/" />
 	<!--Version of the mod-->
-	<ModVersion Value="1.0.7" />
+	<ModVersion Value="1.0.8" />
 	<!--Recommended version of the base game to use the mod-->
-	<GameVersion Value="*.*.*" />
+	<GameVersion Value="1.5.*" />
 	<!--Dependency for the mod, can be set multiple times-->
 	<Dependency Id="" />
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
 	<ChangeLog>
-### Version 1.0.7
-- Changed the checkbox captions on the Options page,
-- Updated the GameVersion compatibility value.
+### Version 1.0.8
+- Updated for game version 1.5.3f1.
+- Fixed an issue where the mod would not load correctly in some cases.
 	</ChangeLog>
 	<!--External link. supported types are discord, github, youtube, twitch, x, paypal, patreon-->
 	<ExternalLink Type="github" Url="https://github.com/lpinter/NiceWeather.git" />
